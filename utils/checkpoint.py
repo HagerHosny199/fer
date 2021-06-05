@@ -20,8 +20,8 @@ def save(net, logger, hps, epoch):
 def restore(net, logger, hps):
     """ Load back the model and logger from a given checkpoint
         epoch detailed in hps['restore_epoch'], if available"""
-    path = os.path.join(hps['model_save_dir'], 'epoch_' + str(hps['restore_epoch']))
-
+    #path = os.path.join(hps['model_save_dir'], 'epoch_' + str(hps['restore_epoch']))
+    path = '/content/epoch_42'
     if os.path.exists(path):
         try:
             checkpoint = torch.load(path)

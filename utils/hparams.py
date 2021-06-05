@@ -3,9 +3,9 @@ import os
 hps = {
     'network': '',  # which network do you want to train
     'name': '',  # whatever you want to name your run
-    'n_epochs': 300,
+    'n_epochs': 2,
     'model_save_dir': None,  # where will checkpoints be stored (path created automatically using hps[name])
-    'restore_epoch': None,  # continue training from a specific saved point
+    'restore_epoch': 42,  # continue training from a specific saved point
     'start_epoch': 0,
     'lr': 0.01,  # starting learning rate
     'save_freq': 20,  # how often to create checkpoints
@@ -13,7 +13,7 @@ hps = {
     'bs': 64,
 }
 
-possible_nets = set(filename.split(".")[0] for filename in os.listdir('models'))
+possible_nets = set(filename.split(".")[0] for filename in os.listdir('/content/fer/models'))
 
 
 def setup_hparams(args):

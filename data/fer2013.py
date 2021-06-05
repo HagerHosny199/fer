@@ -1,24 +1,40 @@
 import numpy as np
 import pandas as pd
 import torch
+import os
+from PIL import Image
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
 from data.dataset import CustomDataset
 
 
-def load_data(path='datasets/fer2013/fer2013.csv'):
+def load_data(path='/content/fer2013.csv'):
     fer2013 = pd.read_csv(path)
     emotion_mapping = {0: 'Angry', 1: 'Disgust', 2: 'Fear', 3: 'Happy', 4: 'Sad', 5: 'Surprise', 6: 'Neutral'}
 
     return fer2013, emotion_mapping
 
 
-def prepare_data(data):
+def prepare_data(datatype = 'train'):
     """ Prepare data for modeling
         input: data frame with labels und pixel data
         output: image and label array """
 
+    labels =  ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
+
+    data_path = '/content/MMAFEDB'+'/' + datatype
+    image_array = []
+    image_label = []
+    for i, folder in enumerate(labels):
+        curr_path = data_path + '/'+ folder
+        for filename in os.listdir(curr_path):
+            img = Image.open(curr_path+'/'+filename).convert('L')
+            image_array.append(img)
+            image_label.append(i)
+
+
+    """
     image_array = np.zeros(shape=(len(data), 48, 48))
     image_label = np.array(list(map(int, data['emotion'])))
 
@@ -26,11 +42,11 @@ def prepare_data(data):
         image = np.fromstring(data.loc[row, 'pixels'], dtype=int, sep=' ')
         image = np.reshape(image, (48, 48))
         image_array[i] = image
-
+    """
     return image_array, image_label
 
 
-def get_dataloaders(path='datasets/fer2013/fer2013.csv', bs=64, augment=True):
+def get_dataloaders(path='/content/fer2013.csv', bs=64, augment=True):
     """ Prepare train, val, & test dataloaders
         Augment training data using:
             - cropping
@@ -41,11 +57,11 @@ def get_dataloaders(path='datasets/fer2013/fer2013.csv', bs=64, augment=True):
         input: path to fer2013 csv file
         output: (Dataloader, Dataloader, Dataloader) """
 
-    fer2013, emotion_mapping = load_data(path)
+    #fer2013, emotion_mapping = load_data(path)
 
-    xtrain, ytrain = prepare_data(fer2013[fer2013['Usage'] == 'Training'])
-    xval, yval = prepare_data(fer2013[fer2013['Usage'] == 'PrivateTest'])
-    xtest, ytest = prepare_data(fer2013[fer2013['Usage'] == 'PublicTest'])
+    xtrain, ytrain = prepare_data()
+    xval, yval = prepare_data('valid')
+    xtest, ytest = prepare_data('test')
 
     mu, st = 0, 255
 
